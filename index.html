@@ -3,19 +3,108 @@
 <meta property="og:url" content="http://example.com/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="og:image" content="http://example.com/img/butterfly-icon.png">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+<meta name="twitter:image" content="http://example.com/img/butterfly-icon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
   localSearch: undefined,
   translate: undefined,
-  noticeOutdate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
   copy: {
     success: 'Copy Successful',
-    error: 'Copy Error',
+    error: 'Copy Failed',
     noSupport: 'Browser Not Supported'
   },
   relativeDate: {
@@ -31,14 +120,14 @@
     month: 'months ago'
   },
   copyright: undefined,
-  lightbox: 'fancybox',
+  lightbox: 'null',
   Snackbar: undefined,
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
     buttonText: 'Load More'
   },
   isPhotoFigcaption: false,
-  islazyload: false,
+  islazyloadPlugin: false,
   isAnchor: false,
   percent: {
     toc: true,
@@ -47,255 +136,92 @@
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: 'Hexo',
-  isPost: false,
-  isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2025-06-16 17:12:35'
-}</script><script>(win=>{
-      win.saveToLocal = {
-        set: (key, value, ttl) => {
-          if (ttl === 0) return
-          const now = Date.now()
-          const expiry = now + ttl * 86400000
-          const item = {
-            value,
-            expiry
-          }
-          localStorage.setItem(key, JSON.stringify(item))
-        },
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 7.2.0"></head><body><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Hexo</span></a></span><div id="menus"></div></nav><div id="site-info"><h1 id="site-title">Hexo</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/15/Docker%E5%B0%8F%E5%93%88/" title="Docker小哈">Docker小哈</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-06-15T01:41:46.000Z" title="Created 2025-06-15 09:41:46">2025-06-15</time></span></div><div class="content">Docker介绍Docker是一个开源的平台，我们可以用Docker来开发、部署和运行我们的应用程序。Docker可以帮助我们将应用程序和底层基础设施进行分离，以帮助我们更快的实现交付。通过Docker技术，我们可以像管理我们的应用一样管理我们的基础设施。同故宫Docker技术，可以精简我们的整个开发和交互流程。 Docoker其实是一个轻量级的虚拟化技术。Docker可以让开发者在构建应用时，将应用与其依赖的环境一起打包到一个可移植的容器中，然后很方便地发布到任意操作系统中。 Docker主要由以下部分组成：  Docker Client; Docker Daemon; Docker Registry;  Docker Client执行相关的命令，例如docker run，就是在Docker Client客户端来执行的。 Docker Client用于和Docker Daemon交互。  Docker DaemonDocker Daemon是一个Docker后台运行的守护进程，我们的Docker Client的命令就是和Docker...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/05/15/CompletableFuture%E5%AD%A6%E4%B9%A0/" title="CompletableFuture学习">CompletableFuture学习</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-05-15T08:46:27.000Z" title="Created 2025-05-15 16:46:27">2025-05-15</time></span></div><div class="content">...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/05/02/SpringSecurity/" title="SpringSecurity">SpringSecurity</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-05-02T01:12:10.000Z" title="Created 2025-05-02 09:12:10">2025-05-02</time></span></div><div class="content">网站攻击测试环境搭建基于Mvc框架搭建一个登陆网站  导入相关依赖  123456789101112131415161718192021222324252627282930313233343536373839404142434445&lt;!--springMVC依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;org.springframework&lt;/groupId&gt;    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;    &lt;version&gt;6.1.14&lt;/version&gt;&lt;/dependency&gt;&lt;!--thymeleaf依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;org.thymeleaf&lt;/groupId&gt;    &lt;artifactId&gt;thymeleaf-spring6&lt;/artifactId&gt;   ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/04/28/JWT/" title="JWT">JWT</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-04-28T14:43:02.000Z" title="Created 2025-04-28 22:43:02">2025-04-28</time></span></div><div class="content">使用JWT 引入依赖  123456&lt;!--引入jwt依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;com.auth0&lt;/groupId&gt;    &lt;artifactId&gt;java-jwt&lt;/artifactId&gt;    &lt;version&gt;4.4.0&lt;/version&gt;&lt;/dependency&gt;   生成token  12345678910Calendar instance = Calendar.getInstance();instance.add(Calendar.SECOND, 20);// 生成令牌String token = JWT.create()    .withClaim(&quot;userId&quot;, 21)    .withClaim(&quot;username&quot;, &quot;liuhuan&quot;)// payload    .withExpiresAt(instance.getTime())// 指定令牌过期时间...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/04/18/Java-NIO-Netty/" title="Java NIO Netty">Java NIO Netty</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-04-18T03:43:38.000Z" title="Created 2025-04-18 11:43:38">2025-04-18</time></span></div><div class="content">NIO基础缓冲区Buffer类及其实现Buffer类是缓冲区的实现，类似于Java中的数组，也是用来存放和获取数据的。但是Buffer相比于Java中的数组，功能就非常强大了，它包含一系列对于数组的快捷操作 Buffer是一个抽象类，它的核心内容： 12345678910public abstract class Buffer &#123;    //这四个变量的关系：mark &lt;= position &lt;= limit &lt;= capacity    //这些变量就是Buffer操作的核心    private int mark = -1;    private int position = 0;    private int limit;    private int capacity;        //直接缓冲区实现子类的数据内存地址    long address;  来看下Buffer类的子类，包括我们认识的所有基本类型（除了boolean类型之外）：  IntBuffer - int类型的缓冲区 ShortBuffer -...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/19/JVM/" title="JVM">JVM</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-03-19T08:33:04.000Z" title="Created 2025-03-19 16:33:04">2025-03-19</time></span></div><div class="content">概念定义：Java Virtual Machine - java程序运行环境（java二进制字节码的运行环境） 好处：  一次编写，到处运行 自动内存管理，垃圾回收功能 数组下标越界检查 多态  JVM JRE JDK三者关系：  内存结构程序计数器Program Counter Register程序计数器（寄存器） 作用 记住下一条jvm指令的执行地址，解释器读取二进制字节码转换为机器码 特点  线程私有的，属于单个线程 不会存在内存溢出  虚拟机栈栈：线程运行需要的内存空间 栈帧：每个方法运行时需要的内存（参数、局部变量、返回地址） Java Virtual Machine...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/09/%E9%9D%A2%E8%AF%95%E9%A2%98/" title="面试题">面试题</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-03-09T12:34:53.000Z" title="Created 2025-03-09 20:34:53">2025-03-09</time></span></div><div class="content">答题技巧总：当前问题回答的是哪些具体的点 分：以1，2，3，4，5的方式分细节描述相关的知识点，如果有哪些点不清楚，直接忽略过去 突出一些技术名词（核心概念，接口，类，关键方法） 避重就轻：没有重点 当面试官问到一个你熟悉的点的时候，一定要尽量拖时间 Spring面试题谈谈Spring...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/03/Docker%E9%BB%91%E9%A9%AC/" title="Docker">Docker</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-03T05:36:13.000Z" title="Created 2025-02-03 13:36:13">2025-02-03</time></span></div><div class="content">安装Docker快速构建、运行、管理应用的工具 在centos中使用yum命令报错： 12345678910111213141516171819202122232425262728293031323334353637已加载插件：fastestmirrorLoading mirror speeds from cached hostfileCould not retrieve mirrorlist http://mirrorlist.centos.org/?release=7&amp;arch=x86_64&amp;repo=os&amp;infra=stock error was14: curl#6 - &quot;Could not resolve host: mirrorlist.centos.org; 未知的错误&quot; One of the configured repositories failed (未知), and yum doesn&#x27;t have enough cached data to continue. At this point the...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/21/RabbitMQ/" title="RabbitMQ">RabbitMQ</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-01-21T01:55:08.000Z" title="Created 2025-01-21 09:55:08">2025-01-21</time></span></div><div class="content">...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/12/28/ES/" title="ES">ES</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-12-28T02:58:47.000Z" title="Created 2024-12-28 10:58:47">2024-12-28</time></span></div><div class="content">初识elasticsearchelasticsearch概念elasticsearch是一款非常强大的开源搜索引擎，可以帮助我们从海量数据中快速找到需要的内容。实现搜索、日志统计、分析等功能。 elasticsearch节课kibana、Logstash、Beats，也就是elastic stack（ELK）。被广泛应用在日志数据分析、实时监控等领域。 elasticsearch是elastic...</div></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">John Doe</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/15/Docker%E5%B0%8F%E5%93%88/" title="Docker小哈">Docker小哈</a><time datetime="2025-06-15T01:41:46.000Z" title="Created 2025-06-15 09:41:46">2025-06-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/15/CompletableFuture%E5%AD%A6%E4%B9%A0/" title="CompletableFuture学习">CompletableFuture学习</a><time datetime="2025-05-15T08:46:27.000Z" title="Created 2025-05-15 16:46:27">2025-05-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/02/SpringSecurity/" title="SpringSecurity">SpringSecurity</a><time datetime="2025-05-02T01:12:10.000Z" title="Created 2025-05-02 09:12:10">2025-05-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/28/JWT/" title="JWT">JWT</a><time datetime="2025-04-28T14:43:02.000Z" title="Created 2025-04-28 22:43:02">2025-04-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/18/Java-NIO-Netty/" title="Java NIO Netty">Java NIO Netty</a><time datetime="2025-04-18T03:43:38.000Z" title="Created 2025-04-18 11:43:38">2025-04-18</time></div></div></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>Archives</span>
+      <a class="card-more-btn" href="/archives/"
+            title="View More">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
       
-        get: key => {
-          const itemStr = localStorage.getItem(key)
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/06/">
+            <span class="card-archive-list-date">
+              June 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
       
-          if (!itemStr) {
-            return undefined
-          }
-          const item = JSON.parse(itemStr)
-          const now = Date.now()
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/05/">
+            <span class="card-archive-list-date">
+              May 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
       
-          if (now > item.expiry) {
-            localStorage.removeItem(key)
-            return undefined
-          }
-          return item.value
-        }
-      }
-    
-      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        script.onerror = reject
-        script.onload = script.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          script.onload = script.onreadystatechange = null
-          resolve()
-        }
-
-        Object.keys(attr).forEach(key => {
-          script.setAttribute(key, attr[key])
-        })
-
-        document.head.appendChild(script)
-      })
-    
-      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onerror = reject
-        link.onload = link.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          link.onload = link.onreadystatechange = null
-          resolve()
-        }
-        document.head.appendChild(link)
-      })
-    
-      win.activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
-    
-        if (t === 'dark') activateDarkMode()
-        else if (t === 'light') activateLightMode()
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/04/">
+            <span class="card-archive-list-date">
+              April 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
       
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    
-      const detectApple = () => {
-        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
-          document.documentElement.classList.add('apple')
-        }
-      }
-      detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Hexo</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/06/15/Docker%E5%B0%8F%E5%93%88/" title="Docker小哈">Docker小哈</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-06-15T01:41:46.000Z" title="Created 2025-06-15 09:41:46">2025-06-15</time></span></div><div class="content">Docker介绍Docker是一个开源的平台，我们可以用Docker来开发、部署和运行我们的应用程序。Docker可以帮助我们将应用程序和底层基础设施进行分离，以帮助我们更快的实现交付。通过Docker技术，我们可以像管理我们的应用一样管理我们的基础设施。同故宫Docker技术，可以精简我们的整个开发和交互流程。
-Docoker其实是一个轻量级的虚拟化技术。Docker可以让开发者在构建应用时，将应用与其依赖的环境一起打包到一个可移植的容器中，然后很方便地发布到任意操作系统中。
-Docker主要由以下部分组成：
-
-Docker Client;
-Docker Daemon;
-Docker Registry;
-
-Docker Client执行相关的命令，例如docker run，就是在Docker Client客户端来执行的。
-Docker Client用于和Docker Daemon交互。
-
-Docker DaemonDocker Daemon是一个Docker后台运行的守护进程，我们的Docker Client的命令就是和Docker Daemon来进行交互的。
-启动Docker Da ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/05/15/CompletableFuture%E5%AD%A6%E4%B9%A0/" title="CompletableFuture学习">CompletableFuture学习</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-05-15T08:46:27.000Z" title="Created 2025-05-15 16:46:27">2025-05-15</time></span></div><div class="content">参考资料：
-CompletableFuture详解
-任务编排：CompletableFuture从入门到精通
-CompletableFuture原理与实践-外卖商家端API的异步化
-背景介绍在实际的开发中，一个接口可能需要同时获取多种不同的数据，然后再汇总返回，这种场景还是挺常见的。比如加载网站首页信息时，需要同时获取推荐列表、广告栏、热门文章等数据。
-如果是串行（按照顺序执行每个任务）执行的话，接口的响应速度会非常慢。考虑这些任务之间有大部分都是无前后关联顺序的，可以并行执行。通过并行执行多个任务的方式，接口的响应速度会得到大幅度优化。
-对于存在前后调用顺序关系的任务，可以进行任务编排。
-对于java程序来说，Java8才引入CompletableFuture可以帮我们实现多个任务的编排，功能非常强大。
-Future介绍Future类是异步思想的典型运用，主要用在一些需要执行耗时任务的场景，避免程序一直原地等待耗时任务执行完成，执行效率太低。具体来说是这样的，当我们执行某一耗时任务时，可以将这个耗时任务交给一个子线程去异步执行，同时我们干点其他事情，不用傻傻等待耗时任务执行完成。等我 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/05/02/SpringSecurity/" title="SpringSecurity">SpringSecurity</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-05-02T01:12:10.000Z" title="Created 2025-05-02 09:12:10">2025-05-02</time></span></div><div class="content">网站攻击测试环境搭建基于Mvc框架搭建一个登陆网站
-
-导入相关依赖
-
-123456789101112131415161718192021222324252627282930313233343536373839404142434445&lt;!--springMVC依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;org.springframework&lt;/groupId&gt;    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;    &lt;version&gt;6.1.14&lt;/version&gt;&lt;/dependency&gt;&lt;!--thymeleaf依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;org.thymeleaf&lt;/groupId&gt;    &lt;artifactId&gt;thymeleaf-spring6&lt;/artifactId&gt;    &lt;version&gt;3.1.3.R ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/04/28/JWT/" title="JWT">JWT</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-04-28T14:43:02.000Z" title="Created 2025-04-28 22:43:02">2025-04-28</time></span></div><div class="content">使用JWT
-引入依赖
-
-123456&lt;!--引入jwt依赖--&gt;&lt;dependency&gt;    &lt;groupId&gt;com.auth0&lt;/groupId&gt;    &lt;artifactId&gt;java-jwt&lt;/artifactId&gt;    &lt;version&gt;4.4.0&lt;/version&gt;&lt;/dependency&gt;
-
-
-生成token
-
-12345678910Calendar instance = Calendar.getInstance();instance.add(Calendar.SECOND, 20);// 生成令牌String token = JWT.create()    .withClaim(&quot;userId&quot;, 21)    .withClaim(&quot;username&quot;, &quot;liuhuan&quot;)// payload    .withExpiresAt(instance.getTime())// 指定令牌过期时间     ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/04/18/Java-NIO-Netty/" title="Java NIO Netty">Java NIO Netty</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-04-18T03:43:38.000Z" title="Created 2025-04-18 11:43:38">2025-04-18</time></span></div><div class="content">NIO基础缓冲区Buffer类及其实现Buffer类是缓冲区的实现，类似于Java中的数组，也是用来存放和获取数据的。但是Buffer相比于Java中的数组，功能就非常强大了，它包含一系列对于数组的快捷操作
-Buffer是一个抽象类，它的核心内容：
-12345678910public abstract class Buffer &#123;    //这四个变量的关系：mark &lt;= position &lt;= limit &lt;= capacity    //这些变量就是Buffer操作的核心    private int mark = -1;    private int position = 0;    private int limit;    private int capacity;        //直接缓冲区实现子类的数据内存地址    long address;
-
-来看下Buffer类的子类，包括我们认识的所有基本类型（除了boolean类型之外）：
-
-IntBuffer - int类型的缓冲区
-ShortBuffer - short类型的缓冲区
-LongB ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/19/JVM/" title="JVM">JVM</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-03-19T08:33:04.000Z" title="Created 2025-03-19 16:33:04">2025-03-19</time></span></div><div class="content">概念定义：Java Virtual Machine - java程序运行环境（java二进制字节码的运行环境）
-好处：
-
-一次编写，到处运行
-自动内存管理，垃圾回收功能
-数组下标越界检查
-多态
-
-JVM JRE JDK三者关系：
-
-内存结构程序计数器Program Counter Register程序计数器（寄存器）
-作用
-记住下一条jvm指令的执行地址，解释器读取二进制字节码转换为机器码
-特点
-
-线程私有的，属于单个线程
-不会存在内存溢出
-
-虚拟机栈栈：线程运行需要的内存空间
-栈帧：每个方法运行时需要的内存（参数、局部变量、返回地址）
-Java Virtual Machine Stacks（Java虚拟机栈）
-
-每个线程运行时所需要的内存，称为虚拟机栈
-每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存
-每个线程只能有一个活动栈帧，对应着当前正在执行的哪个方法
-
-
-垃圾回收是否涉及栈内存？
-
-不涉及
-
-栈内存分配越大越好吗？
-
-不是，物理地址大小一定，当栈内存越大会导致单个线程内存变大，从而导致线程数目变少，影响并发执行效率
-
-方法内的局部变量是否是线程安全？
-
-
- ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/09/%E9%9D%A2%E8%AF%95%E9%A2%98/" title="面试题">面试题</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-03-09T12:34:53.000Z" title="Created 2025-03-09 20:34:53">2025-03-09</time></span></div><div class="content">答题技巧总：当前问题回答的是哪些具体的点
-分：以1，2，3，4，5的方式分细节描述相关的知识点，如果有哪些点不清楚，直接忽略过去
-突出一些技术名词（核心概念，接口，类，关键方法）
-避重就轻：没有重点
-当面试官问到一个你熟悉的点的时候，一定要尽量拖时间
-Spring面试题谈谈Spring IOC的理解，原理与实现？总：
-控制反转：理论思想，原来的对象是由使用者进行控制，有了spring之后，可以把整个对象交给spring来帮我们进行管理
-​		DI：依赖注入，把对应的属性的值注入到具体的对象中，@Autowired，populateBean完成属性值的注入
-容器：存储对象，使用map结构来存储，在spring中一般存在三级缓存，singletonObjects存放完整的bean对象，整个bean的生命周期，从创建到使用到销毁的过程全部都是由容器来管理（bean的生命周期）
-分：
-
-一般聊ioc容器的时候要涉及到容器的创建过程（beanFactory，DefaultListableBeanFactory），向bean工厂中设置一些参数（BeanPostProcessor,Aware接口的子 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/03/Docker%E9%BB%91%E9%A9%AC/" title="Docker">Docker</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-02-03T05:36:13.000Z" title="Created 2025-02-03 13:36:13">2025-02-03</time></span></div><div class="content">安装Docker快速构建、运行、管理应用的工具
-在centos中使用yum命令报错：
-12345678910111213141516171819202122232425262728293031323334353637已加载插件：fastestmirrorLoading mirror speeds from cached hostfileCould not retrieve mirrorlist http://mirrorlist.centos.org/?release=7&amp;arch=x86_64&amp;repo=os&amp;infra=stock error was14: curl#6 - &quot;Could not resolve host: mirrorlist.centos.org; 未知的错误&quot; One of the configured repositories failed (未知), and yum doesn&#x27;t have enough cached data to continue. At this point the only s ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/21/RabbitMQ/" title="RabbitMQ">RabbitMQ</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-01-21T01:55:08.000Z" title="Created 2025-01-21 09:55:08">2025-01-21</time></span></div><div class="content">初识MQ同步调用同步调用的优势是什么？
-
-时效性强，等待到结果后才返回
-
-同步调用的问题是什么？
-
-拓展性差
-性能下降
-级联失败问题
-
-异步调用异步调用方式其实就是基于消息通知的方式，一般包含三个角色：
-
-消息发送者：投递消息的人，就是原来的调用方
-消息代理：管理、暂存、转发消息，你可以把它理解成微信服务器
-消息接收者：接受和处理消息的人，就是原来的服务提供方
-
-
-异步调用的优势是什么？
-
-耦合度低，拓展性强
-异步调用，无需等待，性能好
-故障隔离，下游服务故障不影响上游业务
-缓存消息，流量削峰填谷
-
-异步调用的问题是什么？
-
-不能立即得到调用结果，时效性差
-不确定下游业务执行是否成功
-业务安全依赖于Broker的可靠性
-
-MQ技术选型MQ（MessageQueue），中文是消息队列，字面来看就是存放消息的队列。也就是异步调用中的Broker
-
-RabbitMQ认识和安装具体跟着视频走
-出现一个创建网络的错误
-https://blog.csdn.net/qq_74312711/article/details/134761060
-RabbitMQ的整体架构及核心概念：
-
-virtual-h ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/12/28/ES/" title="ES">ES</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-12-28T02:58:47.000Z" title="Created 2024-12-28 10:58:47">2024-12-28</time></span></div><div class="content">初识elasticsearchelasticsearch概念elasticsearch是一款非常强大的开源搜索引擎，可以帮助我们从海量数据中快速找到需要的内容。实现搜索、日志统计、分析等功能。
-elasticsearch节课kibana、Logstash、Beats，也就是elastic stack（ELK）。被广泛应用在日志数据分析、实时监控等领域。
-elasticsearch是elastic stack的核心、负载存储、搜索、分析数据。
-Lucene是一个Java语言的搜索引擎类库，是Apache公司的顶级项目，由DougCutting于1999年研发。
-Lucene的优势：
-
-易扩展。
-高性能（基于倒排索引）。
-
-Lucene的缺点：
-
-只限于Java语言开发。
-学习曲线陡峭。
-不支持水平扩展。
-
-elasticsearch相比于Lucene具备以下优势：
-
-支持分布式，可水平扩展。
-提供Restful接口，可被任何语言调用。
-
-倒排索引传统数据库（如MySQL）采用正向索引，例如给下表（tb_goods）中的id创建索引：
-如果进行sql语句查询，会造成id索引失效，查询速度很 ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/15/Docker%E5%B0%8F%E5%93%88/" title="Docker小哈">Docker小哈</a><time datetime="2025-06-15T01:41:46.000Z" title="Created 2025-06-15 09:41:46">2025-06-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/15/CompletableFuture%E5%AD%A6%E4%B9%A0/" title="CompletableFuture学习">CompletableFuture学习</a><time datetime="2025-05-15T08:46:27.000Z" title="Created 2025-05-15 16:46:27">2025-05-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/02/SpringSecurity/" title="SpringSecurity">SpringSecurity</a><time datetime="2025-05-02T01:12:10.000Z" title="Created 2025-05-02 09:12:10">2025-05-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/28/JWT/" title="JWT">JWT</a><time datetime="2025-04-28T14:43:02.000Z" title="Created 2025-04-28 22:43:02">2025-04-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/18/Java-NIO-Netty/" title="Java NIO Netty">Java NIO Netty</a><time datetime="2025-04-18T03:43:38.000Z" title="Created 2025-04-18 11:43:38">2025-04-18</time></div></div></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span><a class="card-more-btn" href="/archives/" title="View More">
-    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/06/"><span class="card-archive-list-date">June 2025</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/05/"><span class="card-archive-list-date">May 2025</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/04/"><span class="card-archive-list-date">April 2025</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/03/"><span class="card-archive-list-date">March 2025</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/02/"><span class="card-archive-list-date">February 2025</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/01/"><span class="card-archive-list-date">January 2025</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/12/"><span class="card-archive-list-date">December 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/11/"><span class="card-archive-list-date">November 2024</span><span class="card-archive-list-count">2</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">16</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-06-16T09:12:35.646Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/03/">
+            <span class="card-archive-list-date">
+              March 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/02/">
+            <span class="card-archive-list-date">
+              February 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/01/">
+            <span class="card-archive-list-date">
+              January 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/12/">
+            <span class="card-archive-list-date">
+              December 2024
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/11/">
+            <span class="card-archive-list-date">
+              November 2024
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">16</div></div><div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-06-16T09:41:50.937Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.2.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
